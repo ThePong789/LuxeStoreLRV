@@ -6,17 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Models\{Product, Category, Size};
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
         $query = Product::with(['category', 'sizes']);
-        if ($request->search) $query->where('product_name', 'like', '%' . $request->search . '%');
-        if ($request->category) $query->where('category_id', $request->category);
-        if ($request->filled('active')) $query->where('is_active', (bool) $request->active);
+
+        if ($request->search) {
+            $query->where('product_name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->category) {
+            $query->where('category_id', $request->category);
+        }
+
+        if ($request->filled('active')) {
+            $query->where('is_active', (bool) $request->active);
+        }
+
         $products   = $query->latest()->paginate(15)->withQueryString();
         $categories = Category::all();
+
         return view('admin.products.index', compact('products', 'categories'));
     }
 
@@ -24,23 +36,25 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $sizes      = Size::all();
+
         return view('admin.products.create', compact('categories', 'sizes'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'product_name' => 'required|string|max:255',
-            'category_id'  => 'required|exists:categories,category_id',
-            'description'  => 'nullable|string',
-            'product_image'=> 'nullable|image|max:2048',
-            'sizes'        => 'required|array',
-            'sizes.*.size_id' => 'required|exists:sizes,size_id',
-            'sizes.*.price'   => 'required|numeric|min:0',
-            'sizes.*.stock'   => 'required|integer|min:0',
+            'product_name'     => 'required|string|max:255',
+            'category_id'      => 'required|exists:categories,category_id',
+            'description'      => 'nullable|string',
+            'product_image'    => 'nullable|image|max:2048',
+            'sizes'            => 'required|array',
+            'sizes.*.size_id'  => 'required|exists:sizes,size_id',
+            'sizes.*.price'    => 'required|numeric|min:0',
+            'sizes.*.stock'    => 'required|integer|min:0',
         ]);
 
         $imagePath = null;
+
         if ($request->hasFile('product_image')) {
             $imagePath = $request->file('product_image')->store('products', 'public');
         }
@@ -62,7 +76,9 @@ class ProductController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created!');
+        return redirect()
+            ->route((auth()->user()->isAdmin() ? 'admin' : 'staff') . '.products.index')
+            ->with('success', 'Product created!');
     }
 
     public function edit($id)
@@ -70,20 +86,30 @@ class ProductController extends Controller
         $product    = Product::with('sizes')->findOrFail($id);
         $categories = Category::all();
         $sizes      = Size::all();
+
         return view('admin.products.edit', compact('product', 'categories', 'sizes'));
     }
 
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
+
         $request->validate([
             'product_name' => 'required|string|max:255',
             'category_id'  => 'required|exists:categories,category_id',
         ]);
 
         if ($request->hasFile('product_image')) {
+
+            // delete old image
+            if ($product->product_image) {
+                Storage::disk('public')->delete($product->product_image);
+            }
+
             $imagePath = $request->file('product_image')->store('products', 'public');
+
             $product->product_image = $imagePath;
+            $product->save();
         }
 
         $product->update([
@@ -95,19 +121,34 @@ class ProductController extends Controller
         ]);
 
         if ($request->has('sizes')) {
+
             $sync = [];
+
             foreach ($request->sizes as $s) {
-                $sync[$s['size_id']] = ['price' => $s['price'], 'stock_qty' => $s['stock']];
+                $sync[$s['size_id']] = [
+                    'price'     => $s['price'],
+                    'stock_qty' => $s['stock']
+                ];
             }
+
             $product->sizes()->sync($sync);
         }
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated!');
+        return redirect()
+            ->route((auth()->user()?->isAdmin() ? 'admin' : 'staff') . '.products.index')
+            ->with('success', 'Product updated!');
     }
 
     public function destroy($id)
     {
-        Product::findOrFail($id)->delete();
+        $product = Product::findOrFail($id);
+
+        if ($product->product_image) {
+            Storage::disk('public')->delete($product->product_image);
+        }
+
+        $product->delete();
+
         return back()->with('success', 'Product deleted.');
     }
 }

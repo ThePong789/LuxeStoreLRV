@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     protected $table = 'payment';
+
     protected $primaryKey = 'payment_id';
 
     protected $fillable = [
@@ -15,8 +16,8 @@ class Payment extends Model
         'amount',
         'status',           // pending | awaiting_payment | paid | failed | refunded
         'transaction_id',
-        'qr_reference',     // QR payload reference / KHQR trace number
-        'merchant_id',      // ABA / ACLEDA merchant ID
+        'qr_reference',
+        'merchant_id',
         'paid_at',
         'confirmed_at',
     ];
@@ -26,15 +27,20 @@ class Payment extends Model
         'confirmed_at' => 'datetime',
     ];
 
+    /**
+     * Relationship: Payment belongs to Order
+     */
     public function order()
     {
         return $this->belongsTo(Order::class, 'order_id', 'order_id');
     }
 
-    /** Human-readable payment method label */
+    /**
+     * Human-readable payment method label
+     */
     public function getMethodLabelAttribute(): string
     {
-        return match($this->payment_method) {
+        return match ($this->payment_method) {
             'aba'    => 'ABA Bank QR',
             'acleda' => 'ACLEDA Bank QR',
             'cod'    => 'Cash on Delivery',
@@ -42,19 +48,25 @@ class Payment extends Model
         };
     }
 
-    /** True if this is a QR-based payment */
+    /**
+     * Check if payment uses QR method
+     */
     public function isQrPayment(): bool
     {
         return in_array($this->payment_method, ['aba', 'acleda']);
     }
 
-    /** True if payment is complete */
+    /**
+     * Check if payment is paid
+     */
     public function isPaid(): bool
     {
         return $this->status === 'paid';
     }
 
-    /** True if waiting for user to scan QR */
+    /**
+     * Check if payment is awaiting scan/payment
+     */
     public function isAwaitingPayment(): bool
     {
         return $this->status === 'awaiting_payment';
