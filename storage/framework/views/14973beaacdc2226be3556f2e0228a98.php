@@ -25,7 +25,7 @@
                     <th>Order No.</th>
                     <th>Customer</th>
                     <th>Total</th>
-                    <th>Payment</th>
+                    <th>Payment_Method</th>
                     <th>Status</th>
                     <th>Date</th>
                     <th>Actions</th>
@@ -38,7 +38,7 @@
                     <td><strong><?php echo e($order->order_id); ?></strong></td>
                     <td><?php echo e($order->user->username ?? 'N/A'); ?></td>
                     <td><strong>$<?php echo e(number_format($order->total_price, 2)); ?></strong></td>
-                    <td>
+                    <td style="display: flex; align-items: center; gap: 5px;">
                         <?php if($order->payment): ?>
                             <span class="badge badge-<?php echo e($order->payment->status === 'paid' ? 'success' : 'warning'); ?>"><?php echo e(ucfirst($order->payment->status)); ?></span>
                             <div style="font-size:.75rem;color:var(--text-muted);"><?php echo e($order->payment->payment_method); ?></div>

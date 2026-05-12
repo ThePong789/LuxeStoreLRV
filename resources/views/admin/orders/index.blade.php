@@ -27,7 +27,7 @@
                     <th>Order No.</th>
                     <th>Customer</th>
                     <th>Total</th>
-                    <th>Payment</th>
+                    <th>Payment_Method</th>
                     <th>Status</th>
                     <th>Date</th>
                     <th>Actions</th>
@@ -40,7 +40,7 @@
                     <td><strong>{{ $order->order_id }}</strong></td>
                     <td>{{ $order->user->username ?? 'N/A' }}</td>
                     <td><strong>${{ number_format($order->total_price, 2) }}</strong></td>
-                    <td>
+                    <td style="display: flex; align-items: center; gap: 5px;">
                         @if($order->payment)
                             <span class="badge badge-{{ $order->payment->status === 'paid' ? 'success' : 'warning' }}">{{ ucfirst($order->payment->status) }}</span>
                             <div style="font-size:.75rem;color:var(--text-muted);">{{ $order->payment->payment_method }}</div>

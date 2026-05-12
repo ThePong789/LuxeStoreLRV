@@ -501,3 +501,7 @@ Did you mean this?
 #62 C:/Users/vesot/Downloads/Telegram Desktop/ecommerce-laravel-v6-fixed/ecommerce-laravel-fixed/vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php(23): require_once('C://Users//vesot//...')
 #63 {main}
 "} 
+[2026-05-11 15:51:35] local.ERROR: Maximum execution time of 60 seconds exceeded {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Maximum execution time of 60 seconds exceeded at C:/Users/Lucksing/Downloads/ecommerce-laravel-v6-fixed (2)/ecommerce-laravel-v6-fixed/ecommerce-laravel-fixed/vendor/laravel/framework/src/Illuminate/Database/Connection.php:812)
+[stacktrace]
+#0 {main}
+"} 

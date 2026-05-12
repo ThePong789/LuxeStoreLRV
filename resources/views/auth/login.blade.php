@@ -10,7 +10,7 @@
         :root { --black:#0a0a0a;--gold:#c9a84c;--cream:#faf8f4;--border:#e8e4de;--font-display:'Playfair Display',serif;--font-body:'DM Sans',sans-serif; }
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
         body{font-family:var(--font-body);background:var(--cream);min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
-        .auth-brand{background:var(--black);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:4rem;position:relative;overflow:hidden;}
+        .auth-brand{height: 100vh; background:var(--black);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:4rem;position:relative;overflow:hidden;}
         .auth-brand::before{content:'';position:absolute;width:500px;height:500px;border:1px solid rgba(201,168,76,.1);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
         .auth-brand::after{content:'';position:absolute;width:300px;height:300px;border:1px solid rgba(201,168,76,.08);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);}
         .brand-logo{font-family:var(--font-display);font-size:2.5rem;color:#fff;margin-bottom:1.5rem;z-index:1;}

@@ -103,8 +103,8 @@
             <a href="{{ route('about') }}" class="btn btn-outline" style="color:#fff;border-color:rgba(255,255,255,.3);font-size:1rem;padding:.9rem 2rem;">Our Story</a>
         </div>
     </div>
-    <div class="hero-image">
-        <i class="fas fa-gem hero-icon"></i>
+    <div class="hero-image" style="background-image: url('https://www.cato.org/sites/cato.org/files/styles/aside_3x/public/2023-11/fast-fashion2.jpeg?itok=72ek8bxI'); background-position: center; background-size: cover;">
+        
     </div>
 </section>
 
